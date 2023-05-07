@@ -1,0 +1,8 @@
+version: '3.1'
+
+services:
+    web:
+        build: .
+        container_name: ae07b296f9db84fc339866674efe32b904eb677850d9d74cf7206eab6c8fe1cd
+        ports:
+            -   "3000:3000"
