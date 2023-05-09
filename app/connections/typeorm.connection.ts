@@ -1,15 +1,15 @@
 import {DataSource } from "typeorm";
-import {Todo} from "../domain/entity/todo.entity";
+import envConfig from "../config/env.config";
 
 export const db = new DataSource({
     type: "postgres",
-    host: process.env.POSTGRES_HOST,
-    port: process.env.POSTGRES_PORT ? parseInt(process.env.POSTGRES_PORT) : undefined,
-    username: process.env.POSTGRES_USER,
-    password: String(process.env.POSTGRES_PASSWORD),
-    database: "postgres",
+    host: envConfig.host,
+    port: envConfig.pgPort,
+    username: envConfig.username,
+    password: envConfig.password,
+    database: envConfig.database,
     entities: ['app/domain/entity/**/*.ts'],
-    logging: false,
+    logging: true,
     synchronize: true,
 })
 
