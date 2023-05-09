@@ -1,27 +1,44 @@
 import TodoService from "../services/todo.service";
-import {ITodo} from "../types/todo";
-import Todo from "../domain/models/todo";
+import {Todo} from "../domain/entity/todo.entity";
+import {Request} from "express";
 
-class TodoController<T> {
-    private service: TodoService<T>;
+class TodoController {
+    private service: TodoService;
+    method: Request['method'];
 
-    constructor(service: TodoService<T>) {
+    constructor(service: TodoService, method: Request['method']) {
         this.service = service;
+        this.method = method;
     }
-    async create(data: T): Promise<T> {
+    private async post(data: Todo): Promise<Todo> {
         return await this.service.create(data);
     }
 
-    async get(): Promise<T[]> {
+    private async get(): Promise<Todo[]> {
         return await this.service.get();
     }
 
-    async update(id: string, data: T): Promise<string> {
+    private async update(id: string, data: Todo): Promise<void> {
         return await this.service.update(id, data);
     }
 
-    async delete(id: string): Promise<string> {
+    private async delete(id: string): Promise<void> {
         return await this.service.delete(id);
+    }
+
+    async handleRequest(req: Request): Promise<Todo | Todo[] | void> {
+        switch (this.method) {
+            case 'POST':
+                return await this.post(req.body);
+            case 'GET':
+                return await this.get();
+            case 'PUT':
+                return await this.update(req.params.id, req.body);
+            case 'DELETE':
+                return await this.delete(req.params.id);
+            default:
+                return;
+        }
     }
 }
 

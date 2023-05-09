@@ -1,32 +1,29 @@
 import {ICrudService} from "./types";
-import {BaseEntity} from "typeorm";
+import {Repository} from "typeorm";
+import {Todo} from "../domain/entity/todo.entity";
+import {db} from "../connections/typeorm.connection";
 
-class TodoService<T, U extends BaseEntity = BaseEntity> implements ICrudService<T> {
-    Entity: new () => U;
-    constructor(Entity: new () => U) {
-        this.Entity = Entity;
+class TodoService implements ICrudService<Todo> {
+    repository: Repository<Todo>
+    constructor() {
+        this.repository = db.getRepository(Todo);
     }
-    async create(data: T): Promise<T> {
-        //@ts-ignore
-        const model = this.Entity.create(data);
-        //@ts-ignore
-        return this.Entity.save(model);
+    async create(data: Todo): Promise<Todo> {
+        const model = db.getRepository(Todo).create(data);
+        return this.repository.save(model);
     }
-    async get(): Promise<T[]> {
-        //@ts-ignore
-        return await this.Entity.find();
+    async get(): Promise<Todo[]> {
+        return await this.repository.find();
     }
-    async update(id: string, body: T): Promise<string> {
-        //@ts-ignore
-        const currentTodo = await this.Entity.findOneBy({id});
-        //@ts-ignore
-        const updatedTodo = this.Entity.merge(currentTodo, body);
-        //@ts-ignore
-        return this.Entity.save(updatedTodo);
+    async update(id: string, body: Todo): Promise<void> {
+        const currentTodo = await this.repository.findOneBy({id});
+        if (currentTodo instanceof Todo) {
+            const updatedTodo = this.repository.merge(currentTodo, body);
+            await this.repository.save(updatedTodo);
+        }
     }
-    delete(id: string): Promise<string> {
-        //@ts-ignore
-        return this.Entity.delete(id);
+    async delete(id: string): Promise<void> {
+        await db.getRepository(Todo).delete(id);
     }
 }
 
