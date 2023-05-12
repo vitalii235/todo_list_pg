@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import {Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne} from "typeorm";
+import {User} from "./user.entity";
 
 @Entity({name: "todo"})
 export class Todo {
@@ -16,6 +17,9 @@ export class Todo {
 
     @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     date!: Date;
+
+    @ManyToOne(() => User,  (user) => user.todos)
+    user!: User;
 
     constructor(todo: Todo) {
         this.title = todo?.title || '';

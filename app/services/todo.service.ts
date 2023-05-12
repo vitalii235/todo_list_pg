@@ -1,20 +1,28 @@
-import {ICrudService} from "./types";
+import {ITodoService} from "./types";
 import {Repository} from "typeorm";
 import {Todo} from "../domain/entity/todo.entity";
 import {db} from "../connections/typeorm.connection";
 
-class TodoService implements ICrudService<Todo> {
+class TodoService implements ITodoService<Todo> {
     repository: Repository<Todo>
     constructor() {
         this.repository = db.getRepository(Todo);
     }
     async create(data: Todo): Promise<Todo> {
-        const model = db.getRepository(Todo).create(data);
+        const model = this.repository.create(data);
         return this.repository.save(model);
     }
-    async get(): Promise<Todo[]> {
-        return await this.repository.find();
+    async get(id: string): Promise<Todo[]> {
+        return await this.repository.find({
+            where: {user: {id}}
+        });
     }
+    async getOneById(id: string): Promise<Todo | null> {
+        return await this.repository.findOneBy({
+           id
+        });
+    }
+
     async update(id: string, body: Todo): Promise<void> {
         const currentTodo = await this.repository.findOneBy({id});
         if (currentTodo instanceof Todo) {
