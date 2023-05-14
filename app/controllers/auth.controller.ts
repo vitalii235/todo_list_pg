@@ -24,7 +24,8 @@ class AuthController {
             token: generateToken(),
         })
         return await tokenService.create(tokenInstance);
-    }
+    };
+
     async register(req: Request) {
         const data:User = req.body;
         data.userId = String(Date.now());
@@ -35,7 +36,8 @@ class AuthController {
             token: generateToken()
         })
         return await tokenService.create(tokenInstance);
-    }
+    };
+
     handleRequest(req: Request) {
         switch (req.method) {
             case 'POST':
